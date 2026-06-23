@@ -1,0 +1,8 @@
+{
+  "pack": {
+    "description": "HighBuildLimit — raises Overworld & End build height to Y=2031 (server-side, no client downloads).",
+    "pack_format": 94,
+    "min_format": [88, 0],
+    "max_format": [94, 1]
+  }
+}

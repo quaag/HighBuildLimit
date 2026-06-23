@@ -1,0 +1,36 @@
+# =====================================================================
+# HighBuildLimit configuration
+# =====================================================================
+#
+# IMPORTANT — READ THIS:
+# This plugin does NOT change world/build height by itself. In Minecraft
+# Java, the build height is fixed by the *dimension type*, which is
+# data-driven (a datapack). There is no safe Paper API/NMS call that
+# resizes an already-loaded world's chunk sections at runtime.
+#
+# The HighBuildLimit DATAPACK is what actually raises the limit. It keeps
+# each dimension's vanilla min_y unchanged and only raises the top toward
+# Y=2031 (infinite height is impossible in Minecraft).
+# This plugin is a companion/diagnostic only: it reports each world's
+# real min/max build height and tells you whether the datapack worked.
+#
+# The values below describe what you EXPECT the datapack to do, so that
+# "/highbuildlimit info" can verify it. Changing them does not change
+# any world's height.
+# ---------------------------------------------------------------------
+
+# Master toggle for the plugin's logging/verification output.
+enabled: true
+
+# The maximum placeable Y you expect after installing the datapack.
+# (Minecraft's absolute maximum is 2031. See README.)
+target-max-y: 2031
+
+# Which dimensions you expect the datapack to have raised.
+# Used only by "/highbuildlimit info" to flag mismatches.
+apply-overworld: true
+apply-nether: false
+apply-end: true
+
+# Verbose logging on enable.
+debug: false

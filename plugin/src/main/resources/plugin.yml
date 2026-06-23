@@ -1,0 +1,11 @@
+name: HighBuildLimit
+version: '${version}'
+main: com.example.highbuildlimit.HighBuildLimitPlugin
+api-version: '1.21'
+description: Diagnostic/companion for the HighBuildLimit datapack. Reports each world's real build height and verifies the datapack is active. Does NOT change world height itself.
+author: quaag
+commands:
+  highbuildlimit:
+    description: Show HighBuildLimit info/version and reload config.
+    usage: /highbuildlimit [version|info|reload]
+    aliases: [hbl]
