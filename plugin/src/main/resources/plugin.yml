@@ -6,6 +6,12 @@ description: Diagnostic/companion for the HighBuildLimit datapack. Reports each 
 author: quaag
 commands:
   highbuildlimit:
-    description: Show HighBuildLimit info/version and reload config.
-    usage: /highbuildlimit [version|info|reload]
+    description: HighBuildLimit info/version, reload, and ShadowSafe tools.
+    usage: |-
+      /highbuildlimit [version|info|reload]
+      /hbl shadowsafe <info|scan|dryrun|convert|restore|list|reload> [radius]
     aliases: [hbl]
+permissions:
+  highbuildlimit.admin:
+    description: Access to admin commands (ShadowSafe scan/convert/map).
+    default: op

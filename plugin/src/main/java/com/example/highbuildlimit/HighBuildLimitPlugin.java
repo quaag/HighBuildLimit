@@ -17,9 +17,17 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public final class HighBuildLimitPlugin extends JavaPlugin {
 
+    private ShadowSafe shadowSafe;
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
+
+        // Always initialise so its commands work even if general logging is off below.
+        shadowSafe = new ShadowSafe(this);
+        shadowSafe.load();
+        getServer().getPluginManager().registerEvents(shadowSafe, this);
+        shadowSafe.verifyLoadedChunks();
 
         if (!getConfig().getBoolean("enabled", true)) {
             getLogger().info("Disabled via config (enabled: false). Commands still work.");
@@ -30,6 +38,13 @@ public final class HighBuildLimitPlugin extends JavaPlugin {
         getLogger().info("NOTE: this plugin does NOT change world height. The HighBuildLimit datapack does.");
         getLogger().info("The datapack keeps each dimension's vanilla min_y unchanged and only raises the top toward Y=2031.");
         logHeights();
+    }
+
+    @Override
+    public void onDisable() {
+        if (shadowSafe != null) {
+            shadowSafe.shutdown();
+        }
     }
 
     private void logHeights() {
@@ -67,8 +82,13 @@ public final class HighBuildLimitPlugin extends JavaPlugin {
 
             case "reload":
                 reloadConfig();
+                shadowSafe.load();
                 sender.sendMessage(ChatColor.GREEN + "HighBuildLimit config reloaded.");
                 return true;
+
+            case "shadowsafe":
+            case "shadow-safe":
+                return shadowSafe.handleCommand(sender, args);
 
             case "info":
             default:

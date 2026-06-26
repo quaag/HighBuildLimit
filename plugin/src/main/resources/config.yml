@@ -34,3 +34,25 @@ apply-end: true
 
 # Verbose logging on enable.
 debug: false
+
+# ---------------------------------------------------------------------
+# ShadowSafe: stop tall builds from shadowing the ground, the safe way.
+# No NMS, public API only. No resource pack.
+# ---------------------------------------------------------------------
+# How it works: convert full blocks above min-y into a transparent proxy
+# block (default glass) and spawn a BlockDisplay showing the original block.
+# Glass does not block skylight, so the ground below stays lit, while the
+# build still looks like the original block.
+#
+# Only simple full blocks convert. Containers, tile entities, and detail
+# blocks (stairs/slabs/fences/panes/plants/etc.) are skipped by design.
+# Use /hbl shadowsafe scan -> dryrun -> convert, and restore to undo.
+shadow-safe:
+  enabled: true
+  min-y: 300
+  # Transparent replacement block. Keep it light-safe (glass / stained glass).
+  proxy-block: glass
+  # Max radius (blocks) for scan/dryrun/convert/restore.
+  max-radius: 64
+  # Blocks processed per server tick (higher = faster but heavier).
+  batch-size: 1000

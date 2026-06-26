@@ -89,6 +89,82 @@ What actually works:
 
 All the working options above are server side, vanilla, and safe for existing worlds.
 
+## ShadowSafe (stop tall builds from shadowing the ground)
+
+ShadowSafe is the safe way to deal with shadows from high structures. You build normally,
+then convert full blocks above a chosen Y level. Each converted block is replaced with a
+transparent proxy block (glass by default), and a BlockDisplay entity is spawned at that
+spot showing the original block. Glass does not block skylight, so the ground below stays
+lit, while the build still looks like the original block because of the display.
+
+It uses only the normal Bukkit/Paper API: blocks, BlockDisplay entities, and the
+scheduler. No NMS, no light engine patching, no reflection into internals, no resource
+pack.
+
+Why this is safe: it never touches the light engine, heightmaps, or chunk internals. The
+real block simply becomes glass (which lets skylight through), and the look is carried by
+a normal entity. Entities do not block light, so there is no shadow from them.
+
+Workflow:
+
+1. Build your structure normally.
+2. Stand near it and run `/hbl shadowsafe scan <radius>` to see the block types up there.
+3. Run `/hbl shadowsafe dryrun <radius>` to see how many blocks would convert.
+4. Run `/hbl shadowsafe convert <radius>` to convert them.
+5. Run `/hbl shadowsafe restore <radius>` to undo and put the original blocks back.
+
+Config:
+
+```yaml
+shadow-safe:
+  enabled: true
+  min-y: 300
+  proxy-block: glass
+  max-radius: 64
+  batch-size: 1000
+```
+
+Commands (need permission `highbuildlimit.admin`):
+
+- `/hbl shadowsafe info` explains the system.
+- `/hbl shadowsafe scan <radius>` lists block types above min-y near you. Changes nothing.
+- `/hbl shadowsafe dryrun <radius>` shows how many blocks would convert. Changes nothing.
+- `/hbl shadowsafe convert <radius>` converts supported full blocks above min-y.
+- `/hbl shadowsafe restore <radius>` removes the displays and restores the original blocks.
+- `/hbl shadowsafe list` shows how many converted blocks are tracked.
+- `/hbl shadowsafe reload` reloads the config and saved data.
+
+What converts and what does not:
+
+- Converts: simple full opaque cubes (stone, planks, wool, concrete, logs, etc.).
+- Skipped: containers and tile entities (chests, barrels, furnaces, signs, beds, command
+  blocks, spawners, anything with an inventory or stored data).
+- Skipped: detail blocks (stairs, slabs, fences, walls, doors, trapdoors, buttons,
+  pressure plates, rails, panes, plants).
+- Skipped: air, fluids, bedrock, barriers, light blocks.
+
+Safety and performance:
+
+- Blocks below min-y are never touched.
+- Radius is capped by `max-radius`. Work is batched (`batch-size` per tick) so the server
+  does not freeze. Only already-loaded chunks are processed.
+- Conversions are saved to `shadowsafe-data.yml` and the displays are persistent, so they
+  survive restarts. On chunk load the plugin respawns any missing display, recovers data
+  from a display if the file was lost, and removes duplicate displays.
+- Each display is tagged in its persistent data so the plugin only ever touches its own.
+
+Limits to know:
+
+- Collision is the proxy block's collision. With glass, full blocks still collide like
+  full blocks, so you can still walk on a converted floor.
+- This version handles full blocks only. Detail blocks (stairs, fences, slabs) are skipped
+  and can still cast small shadows. Large full-block floors, walls, and roofs cause most
+  of the visible shadow, so converting those gets you most of the benefit.
+- If a player breaks the glass after conversion, the display can be left floating. Run
+  restore, or break/replace the spot, to clean it up.
+- The proxy must be light-safe. Glass and stained glass work. The plugin warns if you set
+  a proxy that still blocks light.
+
 ## Quick summary
 
 - The datapack changes the height, the plugin does not.
